@@ -13,27 +13,22 @@ namespace Minesweeper
         private readonly Board board;
         private readonly Grid gridBoard = new();
         private readonly Label labelGame;
-        private readonly Label labelScore;
         private readonly Timer timer;
         private Difficulty difficulty;
 
-        public MinesweeperGame(int numRows, int numCols, int numBombs, Label labelGame, Label labelTimer, Label labelScore) {
+        public MinesweeperGame(int numRows, int numCols, int numBombs, Label labelGame, Label labelTimer) {
             this.labelGame = labelGame;
             board = new(numRows, numCols, numBombs);
             timer = new(labelTimer);
-            this.labelScore = labelScore;
-            InitiateScore();
             CreateBoard();
         }
 
-        public MinesweeperGame(Difficulty difficulty, Label labelGame, Label labelTimer, Label labelScore)
+        public MinesweeperGame(Difficulty difficulty, Label labelGame, Label labelTimer)
         {
             this.labelGame = labelGame;
             this.difficulty = difficulty;
             board = new(difficulty);
             timer = new(labelTimer);
-            this.labelScore = labelScore;
-            InitiateScore();
             CreateBoard();
         }
 
@@ -139,17 +134,11 @@ namespace Minesweeper
                 gridBoard.IsEnabled = false;
                 if (board.Win)
                 {
-                    int score = timer.GetTotalMiliseconds();
-                    int highscore = Highscores.GetHighScore(difficulty);
-
-                    if (score < highscore || highscore == 0)
-                    {
-                        Highscores.UpdateHighScore(score, difficulty);
-                        labelScore.Content = "Highscore: " + Timer.ConvertMilisecondsToTime(score);
-                    }
-
                     board.PutFlagsOnMinesLeft();
                     labelGame.Content = "You won!";
+
+                    Highscores highscores = new(timer.GetTotalMiliseconds(), difficulty);
+                    highscores.Show();
                 }
                 else
                 {
@@ -163,19 +152,12 @@ namespace Minesweeper
             return board.NumBombs - board.NumFlags;
         }
 
-        private void InitiateScore()
-        {
-            int score = Highscores.GetHighScore(difficulty);
-            labelScore.Content = "Highscore: " + Timer.ConvertMilisecondsToTime(score);
-        }
-
         public void Restart()
         {
             board.Restart();
             timer.RestartTimer();
             gridBoard.IsEnabled = true;
             UpdateLabel();
-            InitiateScore();
         }
 
         public Grid GetGrid()

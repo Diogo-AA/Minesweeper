@@ -32,7 +32,7 @@ namespace Minesweeper
         {
             InitializeComponent();
 
-            game = new(Difficulty.Hard, labelNumBombs, labelTimer, labelHighscore);
+            game = new(Difficulty.Hard, labelNumBombs, labelTimer);
             GridContent.Children.Add(game.GetGrid());
         }
 
